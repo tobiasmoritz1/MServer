@@ -40,15 +40,15 @@ public class ArdTopicPageDeserializer extends ArdTeasersDeserializer
               .getAsJsonObject();
       final JsonElement teasersElement = showPageElement.get(ELEMENT_TEASERS);
 
+      if (!teasersElement.isJsonNull()) {
+        results.addAll(parseTeasers(teasersElement.getAsJsonArray()));
+      }
+
       final JsonElement paginationElement = showPageElement.get(ELEMENT_PAGINATION);
       ardTopicInfoDto.setSubPageNumber(
           getChildElementAsIntOrNullIfNotExist(paginationElement, ELEMENT_PAGE_NUMBER));
       ardTopicInfoDto.setMaxSubPageNumber(
           getChildElementAsIntOrNullIfNotExist(paginationElement, ELEMENT_TOTAL_ELEMENTS));
-
-      if (!teasersElement.isJsonNull()) {
-        results.addAll(parseTeasers(teasersElement.getAsJsonArray()));
-      }
     }
 
     return ardTopicInfoDto;
