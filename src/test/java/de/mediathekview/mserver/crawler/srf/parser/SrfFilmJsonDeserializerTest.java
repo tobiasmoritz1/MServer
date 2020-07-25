@@ -1,8 +1,5 @@
 package de.mediathekview.mserver.crawler.srf.parser;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-
 import com.google.gson.JsonElement;
 import de.mediathekview.mlib.daten.Film;
 import de.mediathekview.mlib.daten.GeoLocations;
@@ -10,16 +7,20 @@ import de.mediathekview.mlib.daten.Sender;
 import de.mediathekview.mserver.crawler.srf.tasks.SrfTaskTestBase;
 import de.mediathekview.mserver.testhelper.AssertFilm;
 import de.mediathekview.mserver.testhelper.JsonFileReader;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.junit.MatcherAssert.assertThat;
 
 @RunWith(Parameterized.class)
 public class SrfFilmJsonDeserializerTest extends SrfTaskTestBase {
@@ -39,19 +40,19 @@ public class SrfFilmJsonDeserializerTest extends SrfTaskTestBase {
   private final String subtitleUrl;
 
   public SrfFilmJsonDeserializerTest(
-      String aJsonFile,
-      String aM3u8File,
-      String aM3u8Url,
-      String aTheme,
-      String aTitle,
-      LocalDateTime aLocalDateTime,
-      long aDuration,
-      String aDescription,
-      String aWebsite,
-      String aSmallUrl,
-      String aNormalUrl,
-      String aHdUrl,
-      String aSubtitleUrl) {
+      final String aJsonFile,
+      final String aM3u8File,
+      final String aM3u8Url,
+      final String aTheme,
+      final String aTitle,
+      final LocalDateTime aLocalDateTime,
+      final long aDuration,
+      final String aDescription,
+      final String aWebsite,
+      final String aSmallUrl,
+      final String aNormalUrl,
+      final String aHdUrl,
+      final String aSubtitleUrl) {
     jsonFile = aJsonFile;
     m3u8File = aM3u8File;
     m3u8Url = aM3u8Url;
@@ -130,36 +131,21 @@ public class SrfFilmJsonDeserializerTest extends SrfTaskTestBase {
             "https://srfvodhd-vh.akamaihd.net/i/vod/lena/2018/11/lena_20181114_114517_12440540_v_webcast_h264_,q40,q10,q20,q30,q50,q60,.mp4.csmil/index_4_av.m3u8",
             "https://srfvodhd-vh.akamaihd.net/i/vod/lena/2018/11/lena_20181114_114517_12440540_v_webcast_h264_,q40,q10,q20,q30,q50,q60,.mp4.csmil/index_5_av.m3u8",
             "https://ws.srf.ch/subtitles/urn:srf:ais:video:69d9fc3f-a3fd-4802-b2ee-ede92145e87c/subtitle.ttml"
-          },
-          {
-            "/srf/srf_film_page_with_subtitle1.json",
-            "/srf/srf_film_page_with_subtitle1.m3u8",
-            "/i/vod/reporter/2019/12/reporter_20191211_172931_18722867_v_webcast_h264_,q40,q10,q20,q30,q50,q60,.mp4.csmil/master.m3u8",
-            "Reporter",
-            "Cliqme – Der Berner Star im Kosovo",
-            LocalDateTime.of(2020, 1, 26, 22, 25, 0),
-            1319000,
-            "Seit einem Jahr wohnt Gassann Nyangi in Pristina. Der sprachbegabte Berner spricht bereits Albanisch mit kosovarischem Akzent. Das gefällt den Einheimischen: Seit er gemeinsam mit dem kosovarischen Rapper Capital T. einen Song produziert hat, wurde Cliqme dort auf einen Schlag bekannt. In der Schweiz trat er bereits als MC auf – als sogenannter Warmup für Superstars. Jetzt reisst Cliqme auf der Bü\n.....",
-            "https://www.srf.ch/play/tv/reporter/video/cliqme-–-der-berner-star-im-kosovo?id=2b08d6d3-9a7a-4827-9f7b-20f89e1ad144",
-            "https://hdvodsrforigin-f.akamaihd.net/i/vod/reporter/2019/12/reporter_20191211_172931_18722867_v_webcast_h264_,q40,q10,q20,q30,q50,q60,.mp4.csmil/index_3_av.m3u8",
-            "https://hdvodsrforigin-f.akamaihd.net/i/vod/reporter/2019/12/reporter_20191211_172931_18722867_v_webcast_h264_,q40,q10,q20,q30,q50,q60,.mp4.csmil/index_4_av.m3u8",
-            "https://hdvodsrforigin-f.akamaihd.net/i/vod/reporter/2019/12/reporter_20191211_172931_18722867_v_webcast_h264_,q40,q10,q20,q30,q50,q60,.mp4.csmil/index_5_av.m3u8",
-            "https://www.srf.ch/subtitles/srf/07630ff9-9858-4a00-bf10-9856c9891970/episode/de/vod/vod.vtt"
           }
         });
   }
 
   @Test
   public void test() {
-    JsonElement jsonElement = JsonFileReader.readJson(jsonFile);
+    final JsonElement jsonElement = JsonFileReader.readJson(jsonFile);
 
     setupSuccessfulResponse(m3u8Url, m3u8File);
 
-    SrfFilmJsonDeserializer target = new SrfFilmJsonDeserializer(createCrawler());
-    Optional<Film> actual = target.deserialize(jsonElement, Film.class, null);
+    final SrfFilmJsonDeserializer target = new SrfFilmJsonDeserializer(createCrawler());
+    final Optional<Film> actual = target.deserialize(jsonElement, Film.class, null);
 
     assertThat(actual.isPresent(), equalTo(true));
-    Film actualFilm = actual.get();
+    final Film actualFilm = actual.get();
     AssertFilm.assertEquals(
         actualFilm,
         Sender.SRF,
